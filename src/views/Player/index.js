@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { remote } from "electron";
 import VideoPlayer from "react-player";
-import screenfull from "screenfull";
 import socketContext from "../../contexts/socket";
 import { EVENT_TYPES } from "../../constants";
 import styled from "styled-components";
-import { findDOMNode } from "react-dom";
 
 const VIDEO_TYPES = {
   youtube: "youtube",
@@ -15,7 +14,6 @@ function Player() {
   const [nowPlaying, setNowPlaying] = useState(null);
   const [playing, setPlaying] = useState(true);
   const socket = useContext(socketContext);
-  const player = useRef();
 
   useEffect(() => {
     socket.on(EVENT_TYPES.watchTrailer, movie => {
@@ -53,33 +51,23 @@ function Player() {
   }
 
   return (
-    <div style={{ minHeight: "100vh" }}>
-      <button
-        onClick={() =>
-          screenfull.request(findDOMNode(player.current)).catch(console.log)
-        }
-      >
-        full
-      </button>
-      {nowPlaying.type === VIDEO_TYPES.youtube ? (
-        <VideoPlayerStyled url={nowPlaying.src} playing={playing} />
-      ) : (
-        <VideoPlayerStyled
-          ref={player}
-          url={nowPlaying.src}
-          playing={playing}
-          onStart={() =>
-            screenfull.request(findDOMNode(player.current)).catch(console.log)
-          }
-        />
-      )}
-    </div>
+    <Container>
+      <VideoPlayerStyled
+        width="100%"
+        height="100vh"
+        url={nowPlaying.src}
+        playing={playing}
+        onStart={() => remote.getCurrentWindow().setFullScreen(true)}
+      />
+    </Container>
   );
 }
 
+const Container = styled.div`
+  background-color: black;
+`;
+
 const VideoPlayerStyled = styled(VideoPlayer)`
-  width: 100%;
-  min-height: 100vh;
   border: none;
 `;
 
