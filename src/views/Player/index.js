@@ -1,10 +1,11 @@
+import fs from "fs";
 import React, { useState, useEffect, useContext } from "react";
 import { remote } from "electron";
 import VideoPlayer from "react-player";
 import socketContext from "../../contexts/socket";
 import { EVENT_TYPES } from "../../constants";
 import styled from "styled-components";
-import { updateMovieLibrary, getMovieList } from "../../library";
+import { updateMovieLibrary, getMovieList, getMoviePath } from "../../library";
 
 const VIDEO_TYPES = {
   youtube: "youtube",
@@ -45,10 +46,12 @@ function Player() {
       setPlaying(true);
     });
 
-    socket.on(EVENT_TYPES.watchMovie, movie => {
+    socket.on(EVENT_TYPES.watchMovie, ({ nameOnSystem }) => {
+      const file = fs.readFileSync(getMoviePath(nameOnSystem));
+
       setNowPlaying({
         type: VIDEO_TYPES.video,
-        src: movie.movieUrl
+        src: URL.createObjectURL(new Blob([file]))
       });
     });
 
