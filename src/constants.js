@@ -1,4 +1,10 @@
+import { remote } from "electron";
+
 export const SOCKET_URL = "http://localhost:4000";
+
+export const MOVIE_SEARCH_URL = "http://localhost:5000";
+
+export const DEFAULT_MOVIE_DIR = `${remote.process.env.HOME}/Movies/todo`;
 
 export const EVENT_TYPES = {
   watchTrailer: "trailer/watch",
