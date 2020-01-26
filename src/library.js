@@ -27,7 +27,7 @@ function getMovieNames(directory) {
 const getMovieInfo = movieName =>
   fetch(`${MOVIE_SEARCH_URL}/search/${movieName}`).then(res => res.json());
 
-export async function getMovieList() {
+export async function updateMovieLibrary() {
   const store = new Store();
   const existingMovies = store.get(MOVIE_INFO_STORAGE_KEY) || {};
   const moviesOnFileSystem = await getMovieNames(DEFAULT_MOVIE_DIR);
@@ -43,7 +43,11 @@ export async function getMovieList() {
   const movieList = [...existingMovies, ...newMovies];
 
   store.set(MOVIE_INFO_STORAGE_KEY, movieList);
-  console.log(movieList);
+}
+
+export function getMovieList() {
+  const store = new Store();
+  return store.get(MOVIE_INFO_STORAGE_KEY);
 }
 
 export const movieList = [

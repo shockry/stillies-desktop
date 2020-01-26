@@ -4,6 +4,7 @@ import VideoPlayer from "react-player";
 import socketContext from "../../contexts/socket";
 import { EVENT_TYPES } from "../../constants";
 import styled from "styled-components";
+import { updateMovieLibrary, getMovieList } from "../../library";
 
 const VIDEO_TYPES = {
   youtube: "youtube",
@@ -13,14 +14,27 @@ const VIDEO_TYPES = {
 function Player() {
   const [nowPlaying, setNowPlaying] = useState(null);
   const [playing, setPlaying] = useState(true);
+  const [isLibraryUpdated, setIsLibraryUpdated] = useState(false);
   const socket = useContext(socketContext);
 
   useEffect(() => {
+    updateMovieLibrary().then(setIsLibraryUpdated(true));
+  }, []);
+
+  useEffect(() => {
+    if (!isLibraryUpdated) {
+      return;
+    }
+
     socket.on(EVENT_TYPES.watchTrailer, movie => {
       setNowPlaying({
         type: VIDEO_TYPES.youtube,
         src: movie.trailerUrl
       });
+    });
+
+    socket.on(EVENT_TYPES.getMovies, () => {
+      socket.emit(EVENT_TYPES.setMovies, getMovieList());
     });
 
     socket.on(EVENT_TYPES.pauseTrailer, () => {
@@ -39,12 +53,17 @@ function Player() {
     });
 
     return () => {
+      socket.off(EVENT_TYPES.getMovies);
       socket.off(EVENT_TYPES.watchTrailer);
       socket.off(EVENT_TYPES.pauseTrailer);
       socket.off(EVENT_TYPES.playTrailer);
       socket.off(EVENT_TYPES.watchMovie);
     };
-  }, [nowPlaying, socket]);
+  }, [nowPlaying, socket, isLibraryUpdated]);
+
+  if (!isLibraryUpdated) {
+    return <div>Updating library...</div>;
+  }
 
   if (!nowPlaying) {
     return <div>Waiting awkwardly</div>;
