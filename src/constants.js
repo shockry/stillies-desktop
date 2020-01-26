@@ -6,6 +6,8 @@ export const MOVIE_SEARCH_URL = "http://localhost:5000";
 
 export const DEFAULT_MOVIE_DIR = `${remote.process.env.HOME}/Movies/todo`;
 
+export const MOVIE_INFO_STORAGE_KEY = "movies.library";
+
 export const EVENT_TYPES = {
   watchTrailer: "trailer/watch",
   watchMovie: "movie/watch",

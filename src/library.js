@@ -1,5 +1,10 @@
 import fs from "fs";
-import { DEFAULT_MOVIE_DIR, MOVIE_SEARCH_URL } from "./constants";
+import Store from "electron-store";
+import {
+  DEFAULT_MOVIE_DIR,
+  MOVIE_SEARCH_URL,
+  MOVIE_INFO_STORAGE_KEY
+} from "./constants";
 
 function getMovieNames(directory) {
   return new Promise((resolve, reject) => {
@@ -9,7 +14,11 @@ function getMovieNames(directory) {
         return;
       }
       resolve(
-        files.map(fileName => fileName.slice(0, fileName.lastIndexOf(".")))
+        Array.from(
+          new Set(
+            files.map(fileName => fileName.slice(0, fileName.lastIndexOf(".")))
+          )
+        )
       );
     });
   });
@@ -19,9 +28,22 @@ const getMovieInfo = movieName =>
   fetch(`${MOVIE_SEARCH_URL}/search/${movieName}`).then(res => res.json());
 
 export async function getMovieList() {
-  const movieNames = await getMovieNames(DEFAULT_MOVIE_DIR);
-  const movieInfo = await Promise.all(movieNames.map(getMovieInfo));
-  console.log(movieInfo);
+  const store = new Store();
+  const existingMovies = store.get(MOVIE_INFO_STORAGE_KEY) || {};
+  const moviesOnFileSystem = await getMovieNames(DEFAULT_MOVIE_DIR);
+
+  const newMovies = await Promise.all(
+    moviesOnFileSystem
+      .filter(
+        movieName => !existingMovies.find(movie => movie.name === movieName)
+      )
+      .map(getMovieInfo)
+  );
+
+  const movieList = [...existingMovies, ...newMovies];
+
+  store.set(MOVIE_INFO_STORAGE_KEY, movieList);
+  console.log(movieList);
 }
 
 export const movieList = [
