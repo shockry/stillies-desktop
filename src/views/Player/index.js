@@ -9,7 +9,7 @@ import { updateMovieLibrary, getMovieList, getMoviePath } from "../../library";
 
 const VIDEO_TYPES = {
   youtube: "youtube",
-  movie: "movie"
+  movie: "movie",
 };
 
 function Player() {
@@ -27,10 +27,10 @@ function Player() {
       return;
     }
 
-    socket.on(EVENT_TYPES.watchTrailer, movie => {
+    socket.on(EVENT_TYPES.watchTrailer, (movie) => {
       setNowPlaying({
         type: VIDEO_TYPES.youtube,
-        src: movie.trailerUrl
+        src: movie.trailerUrl,
       });
     });
 
@@ -51,7 +51,7 @@ function Player() {
 
       setNowPlaying({
         type: VIDEO_TYPES.video,
-        src: URL.createObjectURL(new Blob([file]))
+        src: URL.createObjectURL(new Blob([file])),
       });
     });
 
