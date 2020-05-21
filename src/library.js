@@ -10,47 +10,54 @@ import {
 
 function getMovieNames(directory) {
   return new Promise((resolve, reject) => {
-    fs.readdir(directory, (err, files) => {
+    fs.readdir(directory, async (err, directoryContents) => {
       if (err) {
         reject(err);
         return;
       }
 
-      resolve(
-        files
-          .filter((fileName) => !fileName.startsWith("."))
-          .map(async (fileName) => {
-            const isDirectory = fs
-              .statSync(path.join(directory, fileName))
-              .isDirectory();
+      const moviesPromises = directoryContents
+        .filter((fileName) => {
+          // Keep only videos and non-hidden files and folders
+          const extension = fileName.split(".")[1];
+          return (
+            !fileName.startsWith(".") &&
+            (!extension || SUPPORTED_VIDEO_FORMATS.has(extension.toLowerCase()))
+          );
+        })
+        .map(async (fileName) => {
+          const isDirectory = fs
+            .statSync(path.join(directory, fileName))
+            .isDirectory();
 
-            if (isDirectory) {
-              const movieDetailsPromise = await getMovieNames(
-                path.join(directory, fileName)
-              );
+          if (isDirectory) {
+            const fileDetails = await getMovieNames(
+              path.join(directory, fileName)
+            );
 
-              const allFileDetails = await Promise.all(movieDetailsPromise);
+            const movieDetails = fileDetails[0];
 
-              const movieDetails = allFileDetails.find((fileDetail) => {
-                const extension = fileDetail.nameOnSystem.split(".")[1];
-                return SUPPORTED_VIDEO_FORMATS.has(extension.toLowerCase());
-              });
-
-              return {
-                ...movieDetails,
-                nameOnSystem: path.join(
-                  movieDetails.title,
-                  movieDetails.nameOnSystem
-                ),
-              };
+            if (!movieDetails) {
+              return null;
             }
 
             return {
-              title: fileName.slice(0, fileName.lastIndexOf(".")),
-              nameOnSystem: fileName, //Keep extension
+              ...movieDetails,
+              nameOnSystem: path.join(
+                movieDetails.title,
+                movieDetails.nameOnSystem
+              ),
             };
-          })
-      );
+          }
+
+          return {
+            title: fileName.slice(0, fileName.lastIndexOf(".")),
+            nameOnSystem: fileName, //Keep extension
+          };
+        });
+
+      const moviesOnSystem = await Promise.all(moviesPromises);
+      resolve(moviesOnSystem.filter(Boolean));
     });
   });
 }
@@ -69,8 +76,7 @@ async function getMovieInfo({ title, nameOnSystem }) {
 export async function updateMovieLibrary() {
   const store = new Store();
   const existingMovies = store.get(MOVIE_INFO_STORAGE_KEY) || [];
-  const moviesOnFileSystemPromises = await getMovieNames(DEFAULT_MOVIE_DIR);
-  const moviesOnFileSystem = await Promise.all(moviesOnFileSystemPromises);
+  const moviesOnFileSystem = await getMovieNames(DEFAULT_MOVIE_DIR);
 
   const newMovies = await Promise.all(
     moviesOnFileSystem
