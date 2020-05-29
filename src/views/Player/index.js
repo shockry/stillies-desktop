@@ -133,7 +133,10 @@ const Container = styled.div`
 `;
 
 const StatusText = styled.span`
-  font-size: 10rem;
+  font-size: 5rem;
+  @media (max-width: 621px) {
+    font-size: 3rem;
+  }
 `;
 
 const PlayerContainer = styled.div`
