@@ -1,5 +1,8 @@
 {
   "name": "stillies-desktop",
+  "build": {
+    "productName": "Stillies"
+  },
   "version": "1.0.0",
   "main": "public/electron.js",
   "private": true,
