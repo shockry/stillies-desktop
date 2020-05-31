@@ -2,12 +2,14 @@ import fs from "fs";
 import path from "path";
 import Store from "electron-store";
 import {
-  DEFAULT_MOVIE_DIR,
-  MOVIE_SEARCH_URL,
+  DEFAULT_MOVIE_LIBRARY_PATH,
+  MOVIE_API_URL,
   MOVIE_INFO_STORAGE_KEY,
   MOVIE_LIBRARY_PATH_STORAGE_KEY,
   SUPPORTED_VIDEO_FORMATS,
 } from "./constants";
+
+const store = new Store();
 
 function getMovieNamesOnSystem(directory) {
   return new Promise((resolve, reject) => {
@@ -66,7 +68,7 @@ function getMovieNamesOnSystem(directory) {
 
 async function getMovieInfo({ title, nameOnSystem }) {
   const movieInfo = await fetch(
-    `${MOVIE_SEARCH_URL}/search/${title}`
+    `${MOVIE_API_URL}/search/${title}`
   ).then((res) => res.json());
 
   return {
@@ -76,7 +78,6 @@ async function getMovieInfo({ title, nameOnSystem }) {
 }
 
 export async function updateMovieLibrary() {
-  const store = new Store();
   const existingMovies = store.get(MOVIE_INFO_STORAGE_KEY) || [];
   const moviesOnFileSystem = await getMovieNamesOnSystem(getMovieLibraryPath());
 
@@ -97,21 +98,17 @@ export async function updateMovieLibrary() {
 }
 
 export const getMoviePath = (nameOnSystem) =>
-  `${DEFAULT_MOVIE_DIR}/${nameOnSystem}`;
+  `${DEFAULT_MOVIE_LIBRARY_PATH}/${nameOnSystem}`;
 
-export function getMovieLibraryPath() {
-  const store = new Store();
-  return store.get(MOVIE_LIBRARY_PATH_STORAGE_KEY) || DEFAULT_MOVIE_DIR;
-}
+export const getMovieLibraryPath = () =>
+  store.get(MOVIE_LIBRARY_PATH_STORAGE_KEY) || DEFAULT_MOVIE_LIBRARY_PATH;
 
 export function setMovieLibraryPath(newPath) {
   if (newPath) {
-    const store = new Store();
-    return store.set(MOVIE_LIBRARY_PATH_STORAGE_KEY, newPath);
+    store.set(MOVIE_LIBRARY_PATH_STORAGE_KEY, newPath);
   }
 }
 
 export function clearLibrary() {
-  const store = new Store();
   store.delete(MOVIE_INFO_STORAGE_KEY);
 }

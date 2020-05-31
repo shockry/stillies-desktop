@@ -2,9 +2,9 @@ import { remote } from "electron";
 
 export const SOCKET_URL = "http://localhost:4000";
 
-export const MOVIE_SEARCH_URL = "http://localhost:5000";
+export const MOVIE_API_URL = "http://localhost:5000";
 
-export const DEFAULT_MOVIE_DIR = `${remote.process.env.HOME}/Movies/todo`;
+export const DEFAULT_MOVIE_LIBRARY_PATH = `${remote.process.env.HOME}/Movies/todo`;
 
 export const MOVIE_INFO_STORAGE_KEY = "movies.library";
 
