@@ -5,13 +5,7 @@ import VideoPlayer from "react-player";
 import socketContext from "../../contexts/socket";
 import { EVENT_TYPES, THEME } from "../../constants";
 import styled from "styled-components";
-import {
-  updateMovieLibrary,
-  getMoviePath,
-  getMovieLibraryPath,
-  setMovieLibraryPath,
-  clearLibrary,
-} from "../../library";
+import * as library from "../../library";
 
 const VIDEO_TYPES = {
   youtube: "youtube",
@@ -36,18 +30,18 @@ const getRandomQuote = () =>
 function Player() {
   const [nowPlaying, setNowPlaying] = useState(null);
   const [playing, setPlaying] = useState(true);
-  const [library, setLibrary] = useState([]);
+  const [movies, setMovies] = useState([]);
   const [greeting, setGreeting] = useState(getRandomQuote());
-  const [libraryPath, setLibraryPath] = useState(getMovieLibraryPath());
+  const [libraryPath, setLibraryPath] = useState(library.getMovieLibraryPath());
 
   const socket = useContext(socketContext);
 
   useEffect(() => {
-    updateMovieLibrary().then(setLibrary);
-  }, [libraryPath]);
+    library.updateMovieLibrary().then(setMovies);
+  }, [libraryPath, movies]);
 
   useEffect(() => {
-    if (library.length === 0) {
+    if (movies.length === 0) {
       return;
     }
 
@@ -59,7 +53,7 @@ function Player() {
     });
 
     socket.on(EVENT_TYPES.getMovies, () => {
-      socket.emit(EVENT_TYPES.setMovies, library);
+      socket.emit(EVENT_TYPES.setMovies, movies);
     });
 
     socket.on(EVENT_TYPES.pauseTrailer, () => {
@@ -71,7 +65,7 @@ function Player() {
     });
 
     socket.on(EVENT_TYPES.watchMovie, ({ nameOnSystem }) => {
-      const file = fs.readFileSync(getMoviePath(nameOnSystem));
+      const file = fs.readFileSync(library.getMoviePath(nameOnSystem));
 
       setNowPlaying({
         type: VIDEO_TYPES.video,
@@ -86,7 +80,7 @@ function Player() {
       socket.off(EVENT_TYPES.playTrailer);
       socket.off(EVENT_TYPES.watchMovie);
     };
-  }, [library, nowPlaying, socket]);
+  }, [movies, nowPlaying, socket]);
 
   useEffect(() => {
     if (!nowPlaying) {
@@ -100,7 +94,7 @@ function Player() {
     }
   }, [nowPlaying]);
 
-  if (library.length === 0) {
+  if (movies.length === 0) {
     return (
       <Container>
         <StatusText>Updating library...</StatusText>
@@ -121,9 +115,9 @@ function Player() {
                 properties: ["openDirectory"],
               });
               if (newPath) {
-                clearLibrary();
-                setMovieLibraryPath(newPath[0]);
-                setLibrary([]);
+                library.clearLibrary();
+                library.setMovieLibraryPath(newPath[0]);
+                setMovies([]);
                 setLibraryPath(newPath[0]);
               }
             }}
