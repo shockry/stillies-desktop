@@ -44,3 +44,15 @@ export const THEME = {
     xLarge: 32,
   },
 };
+
+export const GREETINGS = [
+  "Hello there",
+  "So uh, how was your day",
+  "Wanna watch a movie, eh?",
+  "On your mark",
+  "Roses are red, violets are blue, I will play a movie if you ask me to",
+  "To the infinity and beyond",
+  "Cats",
+  "At the end of the day, we sleep",
+  "I can wait here all day",
+];

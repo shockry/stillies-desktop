@@ -2,9 +2,9 @@ import fs from "fs";
 import React, { useState, useEffect, useContext } from "react";
 import { remote } from "electron";
 import VideoPlayer from "react-player";
-import socketContext from "../../contexts/socket";
-import { EVENT_TYPES, THEME } from "../../constants";
 import styled from "styled-components";
+import socketContext from "../../contexts/socket";
+import { EVENT_TYPES, GREETINGS } from "../../constants";
 import * as library from "../../library";
 
 const VIDEO_TYPES = {
@@ -12,26 +12,14 @@ const VIDEO_TYPES = {
   movie: "movie",
 };
 
-const greetings = [
-  "Hello there",
-  "So uh, how was your day",
-  "Wanna watch a movie, eh?",
-  "On your mark",
-  "Roses are red, violets are blue, I will play a movie if you ask me to",
-  "To the infinity and beyond",
-  "Cats",
-  "At the end of the day, we sleep",
-  "I can wait here all day",
-];
-
-const getRandomQuote = () =>
-  greetings[Math.floor(Math.random() * greetings.length)];
+const getRandomGreeting = () =>
+  GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
 
 function Player() {
   const [nowPlaying, setNowPlaying] = useState(null);
   const [playing, setPlaying] = useState(true);
   const [movies, setMovies] = useState([]);
-  const [greeting, setGreeting] = useState(getRandomQuote());
+  const [greeting, setGreeting] = useState(getRandomGreeting());
   const [libraryPath, setLibraryPath] = useState(library.getMovieLibraryPath());
 
   const socket = useContext(socketContext);
@@ -85,7 +73,7 @@ function Player() {
   useEffect(() => {
     if (!nowPlaying) {
       const interval = setInterval(() => {
-        setGreeting(getRandomQuote());
+        setGreeting(getRandomGreeting());
       }, 10000);
 
       return () => {
@@ -126,7 +114,7 @@ function Player() {
           </UpdateLibraryPathButton>
         </LibraryPathContainer>
         <StatusText>Waiting awkwardly</StatusText>
-        {greeting}
+        <Greeting>{greeting}</Greeting>
       </Container>
     );
   }
@@ -145,8 +133,8 @@ function Player() {
 }
 
 const Container = styled.div`
-  background-color: ${THEME.colors.backgroundPrimary};
-  color: ${THEME.colors.primary};
+  background-color: ${(props) => props.theme.colors.backgroundPrimary};
+  color: ${(props) => props.theme.colors.primary};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -163,15 +151,15 @@ const StatusText = styled.span`
 
 const LibraryPathContainer = styled.span`
   position: absolute;
-  top: ${THEME.spacing.medium}px;
-  left: ${THEME.spacing.medium}px;
+  top: ${(props) => props.theme.spacing.medium}px;
+  left: ${(props) => props.theme.spacing.medium}px;
 `;
 
 const UpdateLibraryPathButton = styled.button`
   background-color: #987284;
   border: none;
   color: #1d0e1e;
-  margin-left: ${THEME.spacing.small}px;
+  margin-left: ${(props) => props.theme.spacing.small}px;
 `;
 
 const PlayerContainer = styled.div`
@@ -180,6 +168,10 @@ const PlayerContainer = styled.div`
 
 const VideoPlayerStyled = styled(VideoPlayer)`
   border: none;
+`;
+
+const Greeting = styled.span`
+  margin-top: ${(props) => props.theme.spacing.small}px;
 `;
 
 export default Player;
