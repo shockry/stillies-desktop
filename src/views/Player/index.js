@@ -26,7 +26,7 @@ function Player() {
 
   useEffect(() => {
     library.updateMovieLibrary().then(setMovies);
-  }, [libraryPath, movies]);
+  }, [libraryPath]);
 
   useEffect(() => {
     if (movies.length === 0) {

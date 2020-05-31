@@ -9,17 +9,18 @@ import {
   SUPPORTED_VIDEO_FORMATS,
 } from "./constants";
 
-function getMovieNames(directory) {
+function getMovieNamesOnSystem(directory) {
   return new Promise((resolve, reject) => {
-    fs.readdir(directory, async (err, directoryContents) => {
-      if (err) {
-        reject(err);
+    fs.readdir(directory, async (error, directoryContents) => {
+      if (error) {
+        reject(error);
         return;
       }
 
       const moviesPromises = directoryContents
         .filter((fileName) => {
           // Keep only videos and non-hidden files and folders
+          // No extension is assumed to be a folder
           const extension = fileName.split(".")[1];
           return (
             !fileName.startsWith(".") &&
@@ -32,23 +33,18 @@ function getMovieNames(directory) {
             .isDirectory();
 
           if (isDirectory) {
-            const fileDetails = await getMovieNames(
+            const moviesInDirectory = await getMovieNamesOnSystem(
               path.join(directory, fileName)
             );
 
-            const movieDetails = fileDetails[0];
-
-            if (!movieDetails) {
+            if (!moviesInDirectory) {
               return null;
             }
 
-            return {
-              ...movieDetails,
-              nameOnSystem: path.join(
-                movieDetails.title,
-                movieDetails.nameOnSystem
-              ),
-            };
+            return moviesInDirectory.map((movieDetail) => ({
+              ...movieDetail,
+              nameOnSystem: path.join(fileName, movieDetail.nameOnSystem),
+            }));
           }
 
           return {
@@ -57,8 +53,13 @@ function getMovieNames(directory) {
           };
         });
 
-      const moviesOnSystem = await Promise.all(moviesPromises);
-      resolve(moviesOnSystem.filter(Boolean));
+      try {
+        const allMovies = await Promise.all(moviesPromises);
+        const moviesOnSystem = allMovies.filter(Boolean);
+        resolve(moviesOnSystem.flat());
+      } catch (error) {
+        reject(error);
+      }
     });
   });
 }
@@ -77,7 +78,7 @@ async function getMovieInfo({ title, nameOnSystem }) {
 export async function updateMovieLibrary() {
   const store = new Store();
   const existingMovies = store.get(MOVIE_INFO_STORAGE_KEY) || [];
-  const moviesOnFileSystem = await getMovieNames(getMovieLibraryPath());
+  const moviesOnFileSystem = await getMovieNamesOnSystem(getMovieLibraryPath());
 
   const newMovies = await Promise.all(
     moviesOnFileSystem
