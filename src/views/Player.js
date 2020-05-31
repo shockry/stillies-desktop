@@ -3,9 +3,9 @@ import React, { useState, useEffect, useContext } from "react";
 import { remote } from "electron";
 import VideoPlayer from "react-player";
 import styled from "styled-components";
-import socketContext from "../../contexts/socket";
-import { EVENT_TYPES, GREETINGS } from "../../constants";
-import * as library from "../../library";
+import socketContext from "../contexts/socket";
+import { EVENT_TYPES, GREETINGS } from "../constants";
+import * as library from "../library";
 
 const VIDEO_TYPES = {
   youtube: "youtube",
@@ -47,7 +47,6 @@ function Player() {
 
     socket.on(EVENT_TYPES.watchMovie, ({ nameOnSystem }) => {
       const file = fs.readFileSync(library.getMoviePath(nameOnSystem));
-
       setNowPlaying({
         type: VIDEO_TYPES.video,
         src: URL.createObjectURL(new Blob([file])),
