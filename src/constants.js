@@ -8,6 +8,8 @@ export const DEFAULT_MOVIE_DIR = `${remote.process.env.HOME}/Movies/todo`;
 
 export const MOVIE_INFO_STORAGE_KEY = "movies.library";
 
+export const MOVIE_LIBRARY_PATH_STORAGE_KEY = "movies.path";
+
 export const EVENT_TYPES = {
   getMovies: "library/get",
   setMovies: "library/set",

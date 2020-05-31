@@ -5,6 +5,7 @@ import {
   DEFAULT_MOVIE_DIR,
   MOVIE_SEARCH_URL,
   MOVIE_INFO_STORAGE_KEY,
+  MOVIE_LIBRARY_PATH_STORAGE_KEY,
   SUPPORTED_VIDEO_FORMATS,
 } from "./constants";
 
@@ -76,7 +77,7 @@ async function getMovieInfo({ title, nameOnSystem }) {
 export async function updateMovieLibrary() {
   const store = new Store();
   const existingMovies = store.get(MOVIE_INFO_STORAGE_KEY) || [];
-  const moviesOnFileSystem = await getMovieNames(DEFAULT_MOVIE_DIR);
+  const moviesOnFileSystem = await getMovieNames(getMovieLibraryPath());
 
   const newMovies = await Promise.all(
     moviesOnFileSystem
@@ -90,12 +91,26 @@ export async function updateMovieLibrary() {
   const movieList = [...existingMovies, ...newMovies];
 
   store.set(MOVIE_INFO_STORAGE_KEY, movieList);
-}
 
-export function getMovieList() {
-  const store = new Store();
-  return store.get(MOVIE_INFO_STORAGE_KEY);
+  return movieList;
 }
 
 export const getMoviePath = (nameOnSystem) =>
   `${DEFAULT_MOVIE_DIR}/${nameOnSystem}`;
+
+export function getMovieLibraryPath() {
+  const store = new Store();
+  return store.get(MOVIE_LIBRARY_PATH_STORAGE_KEY) || DEFAULT_MOVIE_DIR;
+}
+
+export function setMovieLibraryPath(newPath) {
+  if (newPath) {
+    const store = new Store();
+    return store.set(MOVIE_LIBRARY_PATH_STORAGE_KEY, newPath);
+  }
+}
+
+export function clearLibrary() {
+  const store = new Store();
+  store.delete(MOVIE_INFO_STORAGE_KEY);
+}

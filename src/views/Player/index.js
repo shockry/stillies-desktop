@@ -5,7 +5,13 @@ import VideoPlayer from "react-player";
 import socketContext from "../../contexts/socket";
 import { EVENT_TYPES, THEME } from "../../constants";
 import styled from "styled-components";
-import { updateMovieLibrary, getMovieList, getMoviePath } from "../../library";
+import {
+  updateMovieLibrary,
+  getMoviePath,
+  getMovieLibraryPath,
+  setMovieLibraryPath,
+  clearLibrary,
+} from "../../library";
 
 const VIDEO_TYPES = {
   youtube: "youtube",
@@ -30,16 +36,18 @@ const getRandomQuote = () =>
 function Player() {
   const [nowPlaying, setNowPlaying] = useState(null);
   const [playing, setPlaying] = useState(true);
-  const [isLibraryUpdated, setIsLibraryUpdated] = useState(false);
+  const [library, setLibrary] = useState([]);
   const [greeting, setGreeting] = useState(getRandomQuote());
+  const [libraryPath, setLibraryPath] = useState(getMovieLibraryPath());
+
   const socket = useContext(socketContext);
 
   useEffect(() => {
-    updateMovieLibrary().then(setIsLibraryUpdated(true));
-  }, []);
+    updateMovieLibrary().then(setLibrary);
+  }, [libraryPath]);
 
   useEffect(() => {
-    if (!isLibraryUpdated) {
+    if (library.length === 0) {
       return;
     }
 
@@ -51,7 +59,7 @@ function Player() {
     });
 
     socket.on(EVENT_TYPES.getMovies, () => {
-      socket.emit(EVENT_TYPES.setMovies, getMovieList());
+      socket.emit(EVENT_TYPES.setMovies, library);
     });
 
     socket.on(EVENT_TYPES.pauseTrailer, () => {
@@ -78,7 +86,7 @@ function Player() {
       socket.off(EVENT_TYPES.playTrailer);
       socket.off(EVENT_TYPES.watchMovie);
     };
-  }, [nowPlaying, socket, isLibraryUpdated]);
+  }, [library, nowPlaying, socket]);
 
   useEffect(() => {
     if (!nowPlaying) {
@@ -92,7 +100,7 @@ function Player() {
     }
   }, [nowPlaying]);
 
-  if (!isLibraryUpdated) {
+  if (library.length === 0) {
     return (
       <Container>
         <StatusText>Updating library...</StatusText>
@@ -103,6 +111,26 @@ function Player() {
   if (!nowPlaying) {
     return (
       <Container>
+        <LibraryPathContainer>
+          Your movies are checked at {libraryPath}
+          <UpdateLibraryPathButton
+            onClick={() => {
+              const newPath = remote.dialog.showOpenDialogSync({
+                browserWindow: remote.getCurrentWindow(),
+                defaultPath: libraryPath,
+                properties: ["openDirectory"],
+              });
+              if (newPath) {
+                clearLibrary();
+                setMovieLibraryPath(newPath[0]);
+                setLibrary([]);
+                setLibraryPath(newPath[0]);
+              }
+            }}
+          >
+            Change
+          </UpdateLibraryPathButton>
+        </LibraryPathContainer>
         <StatusText>Waiting awkwardly</StatusText>
         {greeting}
       </Container>
@@ -137,6 +165,19 @@ const StatusText = styled.span`
   @media (max-width: 621px) {
     font-size: 3rem;
   }
+`;
+
+const LibraryPathContainer = styled.span`
+  position: absolute;
+  top: ${THEME.spacing.medium}px;
+  left: ${THEME.spacing.medium}px;
+`;
+
+const UpdateLibraryPathButton = styled.button`
+  background-color: #987284;
+  border: none;
+  color: #1d0e1e;
+  margin-left: ${THEME.spacing.small}px;
 `;
 
 const PlayerContainer = styled.div`
