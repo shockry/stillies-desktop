@@ -15,8 +15,8 @@ export const EVENT_TYPES = {
   setMovies: "library/set",
   watchTrailer: "trailer/watch",
   watchMovie: "movie/watch",
-  pauseTrailer: "trailer/pause",
-  playTrailer: "trailer/play",
+  play: "play",
+  pause: "pause",
 };
 
 export const SUPPORTED_VIDEO_FORMATS = new Set([

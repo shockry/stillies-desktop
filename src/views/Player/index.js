@@ -17,7 +17,7 @@ const getRandomGreeting = () =>
 
 function Player() {
   const [nowPlaying, setNowPlaying] = useState(null);
-  const [playing, setPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [movies, setMovies] = useState([]);
   const [greeting, setGreeting] = useState(getRandomGreeting());
   const [libraryPath, setLibraryPath] = useState(library.getMovieLibraryPath());
@@ -33,23 +33,16 @@ function Player() {
       return;
     }
 
+    socket.on(EVENT_TYPES.getMovies, () => {
+      socket.emit(EVENT_TYPES.setMovies, movies);
+    });
+
     socket.on(EVENT_TYPES.watchTrailer, (movie) => {
       setNowPlaying({
         type: VIDEO_TYPES.youtube,
         src: movie.trailerUrl,
       });
-    });
-
-    socket.on(EVENT_TYPES.getMovies, () => {
-      socket.emit(EVENT_TYPES.setMovies, movies);
-    });
-
-    socket.on(EVENT_TYPES.pauseTrailer, () => {
-      setPlaying(false);
-    });
-
-    socket.on(EVENT_TYPES.playTrailer, () => {
-      setPlaying(true);
+      setIsPlaying(true);
     });
 
     socket.on(EVENT_TYPES.watchMovie, ({ nameOnSystem }) => {
@@ -59,14 +52,23 @@ function Player() {
         type: VIDEO_TYPES.video,
         src: URL.createObjectURL(new Blob([file])),
       });
+      setIsPlaying(true);
+    });
+
+    socket.on(EVENT_TYPES.play, () => {
+      setIsPlaying(true);
+    });
+
+    socket.on(EVENT_TYPES.pause, () => {
+      setIsPlaying(false);
     });
 
     return () => {
       socket.off(EVENT_TYPES.getMovies);
       socket.off(EVENT_TYPES.watchTrailer);
-      socket.off(EVENT_TYPES.pauseTrailer);
-      socket.off(EVENT_TYPES.playTrailer);
       socket.off(EVENT_TYPES.watchMovie);
+      socket.off(EVENT_TYPES.play);
+      socket.off(EVENT_TYPES.pause);
     };
   }, [movies, nowPlaying, socket]);
 
@@ -125,7 +127,7 @@ function Player() {
         width="100%"
         height="100vh"
         url={nowPlaying.src}
-        playing={playing}
+        playing={isPlaying}
         onStart={() => remote.getCurrentWindow().setFullScreen(true)}
       />
     </PlayerContainer>
