@@ -3,7 +3,7 @@ const path = require("path");
 const isDev = require("electron-is-dev");
 const {
   default: installExtension,
-  REACT_DEVELOPER_TOOLS
+  REACT_DEVELOPER_TOOLS,
 } = require("electron-devtools-installer");
 
 const app = electron.app;
@@ -13,11 +13,12 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
+    backgroundColor: "#1D0E1E",
     width: 900,
     height: 680,
     webPreferences: {
-      nodeIntegration: true
-    }
+      nodeIntegration: true,
+    },
   });
   mainWindow.loadURL(
     isDev
