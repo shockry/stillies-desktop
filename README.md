@@ -1,3 +1,5 @@
+# Stillies
+
 <p align="center">
 <img src="https://user-images.githubusercontent.com/5257356/83978416-981b1b80-a907-11ea-96c6-622283f5dbf4.png" alt="logo"/>
 </p>
@@ -22,6 +24,10 @@ I would show screenshots but I'm not really sure about copyrights 🙃
 1. Bluetooth sounds like the best solution for this. Why websockets?
 
 Correct. Websockets can be spotty, slow and require constant onnection to the internet. But it was the most suitable solution for my use because mobile Safari doesn't support web bluetooth yet and I don't want to write an iOS app because I don't have a license and I don't want to reinstall it every 6 days. I plan to use Bluetooth whenever it's possible.
+
+2. What's with the name?
+
+It's a ridiculous pun on the work "movies"
 
 # Roadmap if I keep coming back
 
