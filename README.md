@@ -25,6 +25,10 @@ I would show screenshots but I'm not really sure about copyrights 🙃
 
 Correct. Websockets can be spotty, slow and require constant onnection to the internet. But it was the most suitable solution for my use because mobile Safari doesn't support web bluetooth yet and I don't want to write an iOS app because I don't have a license and I don't want to reinstall it every 6 days. I plan to use Bluetooth whenever it's possible.
 
+3. How to run?
+
+At the moment there's no pre-packaged binaries so until then, clone the repo and run `yarn electron-pack`, which will output an executable for your platform in `dist` folder at the root of the project.
+
 2. What's with the name?
 
 It's a ridiculous pun on the work "movies"
