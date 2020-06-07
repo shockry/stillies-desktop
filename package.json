@@ -1,10 +1,24 @@
 {
   "name": "stillies-desktop",
+  "description": "Play movies",
+  "author": "Ahmed Shokry <shokry92@gmail.com>",
   "build": {
-    "productName": "Stillies"
+    "productName": "Stillies",
+    "appId": "com.shockry.stillies",
+    "mac": {
+      "category": "public.app-category.entertainment"
+    },
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
   },
   "version": "1.0.0",
   "main": "public/electron.js",
+  "homepage": "./",
   "private": true,
   "dependencies": {
     "electron-is-dev": "^1.1.0",
@@ -20,7 +34,10 @@
     "start-react": "rescripts start",
     "start": "concurrently \"BROWSER=none yarn start-react\" \"wait-on http://localhost:3000 && electron .\"",
     "build": "rescripts build",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "electron-builder install-app-deps",
+    "preelectron-pack": "yarn build",
+    "electron-pack": "electron-builder build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -42,7 +59,7 @@
     "@rescripts/rescript-env": "^0.0.11",
     "concurrently": "^5.0.2",
     "electron": "^7.1.9",
-    "electron-builder": "^22.2.0",
+    "electron-builder": "^22.7.0",
     "electron-devtools-installer": "^2.2.4",
     "wait-on": "^4.0.0"
   }

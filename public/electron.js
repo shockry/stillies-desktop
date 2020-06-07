@@ -1,10 +1,6 @@
 const electron = require("electron");
 const path = require("path");
 const isDev = require("electron-is-dev");
-const {
-  default: installExtension,
-  REACT_DEVELOPER_TOOLS,
-} = require("electron-devtools-installer");
 
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
@@ -26,6 +22,10 @@ function createWindow() {
       : `file://${path.join(__dirname, "../build/index.html")}`
   );
   if (isDev) {
+    const {
+      default: installExtension,
+      REACT_DEVELOPER_TOOLS,
+    } = require("electron-devtools-installer");
     installExtension(REACT_DEVELOPER_TOOLS).then(() =>
       mainWindow.webContents.openDevTools()
     );
