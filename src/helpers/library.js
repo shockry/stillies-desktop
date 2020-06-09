@@ -7,7 +7,7 @@ import {
   MOVIE_INFO_STORAGE_KEY,
   MOVIE_LIBRARY_PATH_STORAGE_KEY,
   SUPPORTED_VIDEO_FORMATS,
-} from "./constants";
+} from "../constants";
 
 const store = new Store();
 

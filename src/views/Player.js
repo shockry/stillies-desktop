@@ -1,11 +1,11 @@
-import fs from "fs";
 import React, { useState, useEffect, useContext } from "react";
 import { remote } from "electron";
 import VideoPlayer from "react-player";
 import styled from "styled-components";
 import socketContext from "../contexts/socket";
 import { EVENT_TYPES, GREETINGS } from "../constants";
-import * as library from "../library";
+import * as library from "../helpers/library";
+import { getMovieUrl } from "../helpers/mediaServer";
 
 const VIDEO_TYPES = {
   youtube: "youtube",
@@ -46,10 +46,10 @@ function Player() {
     });
 
     socket.on(EVENT_TYPES.watchMovie, ({ nameOnSystem }) => {
-      const file = fs.readFileSync(library.getMoviePath(nameOnSystem));
+      const file = getMovieUrl(nameOnSystem);
       setNowPlaying({
         type: VIDEO_TYPES.video,
-        src: URL.createObjectURL(new Blob([file])),
+        src: file,
       });
       setIsPlaying(true);
     });
