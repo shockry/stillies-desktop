@@ -40,7 +40,7 @@ It's a ridiculous pun on the work "movies"
 * Adjustable volume
 * Seeking
 * More movie details
-* Faster movie playback (converting to blob takes time)
+* ~~Faster movie playback (converting to blob takes time)~~
 * Better fullscreen solution
 * Button to force update library
 * Ignore movies that fail to fetch their info
