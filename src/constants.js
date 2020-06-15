@@ -14,6 +14,8 @@ export const MOVIE_INFO_STORAGE_KEY = "movies.library";
 export const MOVIE_LIBRARY_PATH_STORAGE_KEY = "movies.path";
 
 export const EVENT_TYPES = {
+  roomName: "roomName",
+  clientConnected: "clientConnected",
   getMovies: "library/get",
   setMovies: "library/set",
   watchTrailer: "trailer/watch",
