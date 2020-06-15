@@ -22,19 +22,18 @@ function Player() {
   const [greeting, setGreeting] = useState(getRandomGreeting());
   const [libraryPath, setLibraryPath] = useState(library.getMovieLibraryPath());
 
-  const socket = useContext(socketContext);
+  const { socket, room } = useContext(socketContext);
 
   useEffect(() => {
-    library.updateMovieLibrary().then(setMovies);
-  }, [libraryPath]);
+    library.updateMovieLibrary().then((movies) => {
+      setMovies(movies);
+      socket.emit(EVENT_TYPES.setMovies, movies, room);
+    });
+  }, [libraryPath, room, socket]);
 
   useEffect(() => {
-    if (movies.length === 0) {
-      return;
-    }
-
     socket.on(EVENT_TYPES.getMovies, () => {
-      socket.emit(EVENT_TYPES.setMovies, movies);
+      socket.emit(EVENT_TYPES.setMovies, movies, room);
     });
 
     socket.on(EVENT_TYPES.watchTrailer, (movie) => {
@@ -69,7 +68,7 @@ function Player() {
       socket.off(EVENT_TYPES.play);
       socket.off(EVENT_TYPES.pause);
     };
-  }, [movies, nowPlaying, socket]);
+  }, [movies, nowPlaying, room, socket]);
 
   useEffect(() => {
     if (!nowPlaying) {
