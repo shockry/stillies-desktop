@@ -33,7 +33,7 @@ You can also run it locally by cloning the repo and running `yarn electron-pack`
 
 2. What's with the name?
 
-It's a ridiculous pun on the work "movies"
+It's a ridiculous pun on the word "movies"
 
 # Roadmap if I keep coming back
 
