@@ -8,6 +8,10 @@
     "mac": {
       "category": "public.app-category.entertainment"
     },
+    "linux": {
+      "target": "deb",
+      "category": "AudioVideo"
+    },
     "files": [
       "build/**/*",
       "node_modules/**/*"
