@@ -77,7 +77,10 @@ async function getMovieInfo({ title, nameOnSystem }) {
   };
 }
 
-export async function updateMovieLibrary() {
+export async function updateMovieLibrary(force = false) {
+  if (force) {
+    store.delete(MOVIE_INFO_STORAGE_KEY);
+  }
   const existingMovies = store.get(MOVIE_INFO_STORAGE_KEY) || [];
   const moviesOnFileSystem = await getMovieNamesOnSystem(getMovieLibraryPath());
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { remote } from "electron";
 import VideoPlayer from "react-player";
 import styled from "styled-components";
@@ -24,12 +24,19 @@ function Player() {
 
   const { socket, room } = useContext(socketContext);
 
+  const updateLibrary = useCallback(
+    ({ force } = { force: false }) => {
+      library.updateMovieLibrary(force).then((movies) => {
+        setMovies(movies);
+        socket.emit(EVENT_TYPES.setMovies, movies, room);
+      });
+    },
+    [room, socket]
+  );
+
   useEffect(() => {
-    library.updateMovieLibrary().then((movies) => {
-      setMovies(movies);
-      socket.emit(EVENT_TYPES.setMovies, movies, room);
-    });
-  }, [libraryPath, room, socket]);
+    updateLibrary();
+  }, [libraryPath, updateLibrary]);
 
   useEffect(() => {
     socket.on(EVENT_TYPES.getMovies, () => {
@@ -95,7 +102,7 @@ function Player() {
       <Container>
         <LibraryPathContainer>
           Your movies are checked at {libraryPath}
-          <UpdateLibraryPathButton
+          <Button
             onClick={() => {
               const newPath = remote.dialog.showOpenDialogSync({
                 browserWindow: remote.getCurrentWindow(),
@@ -111,7 +118,15 @@ function Player() {
             }}
           >
             Change
-          </UpdateLibraryPathButton>
+          </Button>
+          <Button
+            onClick={() => {
+              setMovies([]);
+              updateLibrary({ force: true });
+            }}
+          >
+            Refresh library
+          </Button>
         </LibraryPathContainer>
         <StatusText>Waiting awkwardly</StatusText>
         <Greeting>{greeting}</Greeting>
@@ -155,7 +170,7 @@ const LibraryPathContainer = styled.span`
   left: ${(props) => props.theme.spacing.medium}px;
 `;
 
-const UpdateLibraryPathButton = styled.button`
+const Button = styled.button`
   background-color: #987284;
   border: none;
   color: #1d0e1e;
