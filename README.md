@@ -27,15 +27,17 @@ Correct. Websockets can be spotty, slow and require constant onnection to the in
 
 3. How to run?
 
-At the moment there's no pre-packaged binaries so until then, clone the repo and run `yarn electron-pack`, which will output an executable for your platform in `dist` folder at the root of the project.
+You will find the latest version under the Releases tab in this repo, currently supporting Windows, macOS, and Linux (deb).
+
+You can also run it locally by cloning the repo and running `yarn electron-pack`, which will output an executable for your platform in `dist` folder at the root of the project.
 
 2. What's with the name?
 
-It's a ridiculous pun on the work "movies"
+It's a ridiculous pun on the word "movies"
 
 # Roadmap if I keep coming back
 
-* CI/CD
+* ~~CI/CD~~
 * Subtitles
 * Adjustable volume
 * Seeking
