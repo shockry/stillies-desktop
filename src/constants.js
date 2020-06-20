@@ -3,7 +3,7 @@ import { remote } from "electron";
 export const MOVIE_API_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:4000"
-    : "https://stillies-backend.herokuapp.com/";
+    : "https://stillies-backend.herokuapp.com";
 
 export const SOCKET_URL = MOVIE_API_URL;
 
