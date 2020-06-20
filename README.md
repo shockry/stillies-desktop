@@ -44,7 +44,7 @@ It's a ridiculous pun on the word "movies"
 * More movie details
 * ~~Faster movie playback (converting to blob takes time)~~
 * Better fullscreen solution
-* Button to force update library
+* ~~Button to force update library~~
 * Ignore movies that fail to fetch their info
 * Remove duplicate movies
 * Notify if chosen directory doesn't contain any movies
